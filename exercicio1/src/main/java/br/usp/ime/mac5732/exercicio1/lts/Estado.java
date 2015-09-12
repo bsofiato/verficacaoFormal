@@ -2,20 +2,27 @@ package br.usp.ime.mac5732.exercicio1.lts;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Estado implements Serializable {  
   
   private String nome;
 
-  private Map <String, Estado> entradas = new HashMap <String, Estado> ();
-  private Map <String, Estado> saidas = new HashMap <String, Estado> ();
-
-  public Estado(String nome) {
-    this.nome = nome;
+  private Map <String, Set <Estado>> entradas = new HashMap <String, Set <Estado>> ();
+  private Map <String, Set <Estado>> saidas = new HashMap <String, Set <Estado>> ();
+  
+  private void initEntradaSaida(String alfabetoEntry) {
+    getEntradas().put(alfabetoEntry, new HashSet<Estado>());
+    getSaidas().put(alfabetoEntry, new HashSet<Estado>());
   }
 
-  public Estado() {
+  private Estado() {
+  }
+  public Estado(String nome, Set<String> alfabeto) {
+    this.nome = nome;
+    alfabeto.stream().forEach(t->initEntradaSaida(t));
   }
 
   public String getNome() {
@@ -26,11 +33,11 @@ public class Estado implements Serializable {
     this.nome = nome;
   }
 
-  public Map<String, Estado> getEntradas() {
+  public Map<String, Set <Estado>> getEntradas() {
     return entradas;
   }
 
-  public void setEntradas(Map<String, Estado> entradas) {
+  public void setEntradas(Map<String, Set <Estado>> entradas) {
     if (entradas == null) {
       getEntradas().clear();
     } else {
@@ -38,11 +45,11 @@ public class Estado implements Serializable {
     }
   }
 
-  public Map<String, Estado> getSaidas() {
+  public Map<String, Set <Estado>> getSaidas() {
     return saidas;
   }
 
-  public void setSaidas(Map<String, Estado> saidas) {
+  public void setSaidas(Map<String, Set <Estado>> saidas) {
     if (saidas == null) {
       getSaidas().clear();
     } else {

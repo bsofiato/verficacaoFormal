@@ -33,15 +33,14 @@ public class JSONLTSDeserializer extends JsonDeserializer <LTS> {
       throw new JsonParseException("Canal " + canal + " nao pertece ao alfabeto", JsonLocation.NA);
     }
     
-    entrada.getSaidas().put(canal, saida);
-    saida.getEntradas().put(canal, entrada);
-    
+    entrada.getSaidas().get(canal).add(saida);
+    saida.getEntradas().get(canal).add(entrada);
   }
   private Set <String> getAlfabeto(JsonNode node) {
     return StreamSupport.stream(node.get("alfabeto").spliterator(), false).map(t -> t.asText()).collect(Collectors.toSet());
   }
-  private Set <Estado> getEstados(JsonNode node) {
-    return StreamSupport.stream(node.get("estados").spliterator(), false).map(t -> new Estado(t.asText())).collect(Collectors.toSet());
+  private Set <Estado> getEstados(Set <String> alfabeto, JsonNode node) {
+    return StreamSupport.stream(node.get("estados").spliterator(), false).map(t -> new Estado(t.asText(), alfabeto)).collect(Collectors.toSet());
   }
   
   private LTS processTransicoes(LTS lts, JsonNode node) throws JsonProcessingException {
@@ -55,7 +54,7 @@ public class JSONLTSDeserializer extends JsonDeserializer <LTS> {
   public LTS deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
     JsonNode node = jp.getCodec().readTree(jp);
     Set <String> alfabeto = getAlfabeto(node);
-    Set <Estado> estado = getEstados(node);
+    Set <Estado> estado = getEstados(alfabeto, node);
     
     return processTransicoes(new LTS(alfabeto, estado), node);
   }
