@@ -39,18 +39,18 @@ public class JSONLTSDeserializer extends JsonDeserializer <LTS> {
   private Set <String> getAlfabeto(JsonNode node) {
     return StreamSupport.stream(node.get("alfabeto").spliterator(), false).map(t -> t.asText()).collect(Collectors.toSet());
   }
-  private Set <Estado> getEstados(Set <String> alfabeto, JsonNode node) {
-    return StreamSupport.stream(node.get("estados").spliterator(), false).map(t -> new Estado(t.asText(), alfabeto)).collect(Collectors.toSet());
+  private void processEstados(LTS lts, JsonNode node) {
+    StreamSupport.stream(node.get("estados").spliterator(), false).forEach(t -> lts.addEstado(t.asText()));
   }
   
-  private Estado getEstadoInicial(Set <Estado> estados, JsonNode node) throws JsonParseException {
+  private void processEstadoInicial(LTS lts, JsonNode node) throws JsonParseException {
     String estadoInicial = node.get("estadoInicial").asText();
-    for (Estado estado : estados) {
-      if (estado.getNome().equals(estadoInicial)) {
-        return estado;
-      }
+    Estado estado = lts.getEstado(estadoInicial);
+    if (estado == null) {
+      throw new JsonParseException("Estado inicial " + estadoInicial + " nao pertence ao conjunto de estados", JsonLocation.NA);
+    } else {
+      lts.setEstadoInicial(estado);
     }
-    throw new JsonParseException("Estado inicial " + estadoInicial + " nao pertence ao conjunto de estados", JsonLocation.NA);
   }
 
   private LTS processTransicoes(LTS lts, JsonNode node) throws JsonProcessingException {
@@ -63,8 +63,9 @@ public class JSONLTSDeserializer extends JsonDeserializer <LTS> {
   @Override
   public LTS deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
     JsonNode node = jp.getCodec().readTree(jp);
-    Set <String> alfabeto = getAlfabeto(node);
-    Set <Estado> estados = getEstados(alfabeto, node);
-    return processTransicoes(new LTS(alfabeto, estados, getEstadoInicial(estados, node)), node);
+    LTS lts = new  LTS(getAlfabeto(node));
+    processEstados(lts, node);
+    processEstadoInicial(lts, node);
+    return processTransicoes(lts, node);
   }
 }

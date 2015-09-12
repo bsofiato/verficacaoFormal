@@ -5,18 +5,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class LTS implements Serializable {
-  private Set <String> alfabeto = new HashSet <String> ();
-  private Set <Estado> estados = new HashSet <Estado> ();
+  private final Set <String> alfabeto;
+  private final Set <Estado> estados = new HashSet <Estado> ();
   
   private Estado estadoInicial;
 
-  public LTS() {
-  }
-
-  public LTS(Set <String> alfabeto, Set <Estado> estados, Estado estadoInicial) {
-    setAlfabeto(alfabeto);
-    setEstados(estados);
-    setEstadoInicial(estadoInicial);
+  public LTS(Set <String> alfabeto) {
+    this.alfabeto = alfabeto;
   }
 
   public Estado getEstadoInicial() {
@@ -31,24 +26,14 @@ public class LTS implements Serializable {
     return alfabeto;
   }
 
-  public void setAlfabeto(Set<String> alfabeto) {
-    if (alfabeto == null) {
-      getAlfabeto().clear();
-    } else {
-      this.alfabeto = alfabeto;
-    }
-  }
-
   public Set<Estado> getEstados() {
     return estados;
   }
 
-  public void setEstados(Set<Estado> estados) {
-    if (estados == null) {
-      getEstados().clear();
-    } else {
-      this.estados = estados;
-    }
+  public Estado addEstado(String estado) {
+    Estado e = new Estado(this, estado, getAlfabeto());
+    getEstados().add(e);
+    return e;
   }
   
   public Estado getEstado(String estado) {
@@ -59,6 +44,4 @@ public class LTS implements Serializable {
     }
     return null;
   }
-  
-  
 }

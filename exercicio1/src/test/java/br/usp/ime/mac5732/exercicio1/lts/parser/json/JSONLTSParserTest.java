@@ -31,7 +31,10 @@ public class JSONLTSParserTest {
       
       Estado estadoX = lts.getEstado("X");
       Estado estadoY = lts.getEstado("Y");
-      
+
+      assertSame(lts, estadoX.getLTS());
+      assertSame(lts, estadoY.getLTS());
+
       assertSame(estadoX, lts.getEstadoInicial());
       
       assertEquals(2, estadoX.getSaidas().size());
@@ -66,6 +69,10 @@ public class JSONLTSParserTest {
       Estado estadoX = lts.getEstado("X");
       Estado estadoY = lts.getEstado("Y");
       Estado estadoW = lts.getEstado("W");
+
+      assertSame(lts, estadoX.getLTS());
+      assertSame(lts, estadoY.getLTS());
+      assertSame(lts, estadoW.getLTS());
 
       assertSame(estadoX, lts.getEstadoInicial());
       
