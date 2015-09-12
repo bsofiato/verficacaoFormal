@@ -82,11 +82,6 @@ public class JSONLTSParserTest {
 
       assertEquals(1, estadoW.getEntradas().size());
       assertTrue(Arrays.asList(estadoX).containsAll(estadoW.getEntradas().get("a")));
-
-//      
-//      assertEquals(2, estadoY.getEntradas().size());
-//      assertTrue(Arrays.asList(estadoX).containsAll(estadoY.getEntradas().get("a")));
-//      assertTrue(estadoY.getEntradas().get("b").isEmpty());*/
     }
   }
  
