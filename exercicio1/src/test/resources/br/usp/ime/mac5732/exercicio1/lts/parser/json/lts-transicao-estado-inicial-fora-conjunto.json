@@ -3,8 +3,8 @@
   "estados" : ["X", "Y"],
   "transicoes" : [
     ["X", "a", "Y"],
-    ["Y", "c", "X"], 
+    ["Y", "a", "X"], 
     ["X", "b", "X"]
-  ], 
-  "estadoInicial" : "X"
+  ],
+  "estadoInicial" : "K"
 }

@@ -18,7 +18,7 @@ public class JSONLTSDeserializer extends JsonDeserializer <LTS> {
   private Estado safeGetEstado(LTS lts, String name) throws JsonProcessingException {
     Estado estado = lts.getEstado(name);
     if (estado == null) {
-      throw new JsonParseException("Estado de nome " + name + "inexistente", JsonLocation.NA);
+      throw new JsonParseException("Estado de nome " + name + " inexistente", JsonLocation.NA);
     }
     return estado;
   }
@@ -43,6 +43,16 @@ public class JSONLTSDeserializer extends JsonDeserializer <LTS> {
     return StreamSupport.stream(node.get("estados").spliterator(), false).map(t -> new Estado(t.asText(), alfabeto)).collect(Collectors.toSet());
   }
   
+  private Estado getEstadoInicial(Set <Estado> estados, JsonNode node) throws JsonParseException {
+    String estadoInicial = node.get("estadoInicial").asText();
+    for (Estado estado : estados) {
+      if (estado.getNome().equals(estadoInicial)) {
+        return estado;
+      }
+    }
+    throw new JsonParseException("Estado inicial " + estadoInicial + " nao pertence ao conjunto de estados", JsonLocation.NA);
+  }
+
   private LTS processTransicoes(LTS lts, JsonNode node) throws JsonProcessingException {
     for (JsonNode transicao : node.get("transicoes")) {
       addTransicao(lts, transicao);
@@ -54,8 +64,7 @@ public class JSONLTSDeserializer extends JsonDeserializer <LTS> {
   public LTS deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
     JsonNode node = jp.getCodec().readTree(jp);
     Set <String> alfabeto = getAlfabeto(node);
-    Set <Estado> estado = getEstados(alfabeto, node);
-    
-    return processTransicoes(new LTS(alfabeto, estado), node);
+    Set <Estado> estados = getEstados(alfabeto, node);
+    return processTransicoes(new LTS(alfabeto, estados, getEstadoInicial(estados, node)), node);
   }
 }

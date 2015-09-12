@@ -7,16 +7,26 @@ import java.util.Set;
 public class LTS implements Serializable {
   private Set <String> alfabeto = new HashSet <String> ();
   private Set <Estado> estados = new HashSet <Estado> ();
+  
+  private Estado estadoInicial;
 
   public LTS() {
   }
 
-  public LTS(Set <String> alfabeto, Set <Estado> estados) {
+  public LTS(Set <String> alfabeto, Set <Estado> estados, Estado estadoInicial) {
     setAlfabeto(alfabeto);
     setEstados(estados);
+    setEstadoInicial(estadoInicial);
   }
 
-  
+  public Estado getEstadoInicial() {
+    return estadoInicial;
+  }
+
+  public void setEstadoInicial(Estado estadoInicial) {
+    this.estadoInicial = estadoInicial;
+  }
+
   public Set<String> getAlfabeto() {
     return alfabeto;
   }

@@ -32,6 +32,8 @@ public class JSONLTSParserTest {
       Estado estadoX = lts.getEstado("X");
       Estado estadoY = lts.getEstado("Y");
       
+      assertSame(estadoX, lts.getEstadoInicial());
+      
       assertEquals(2, estadoX.getSaidas().size());
       assertTrue(Arrays.asList(estadoY).containsAll(estadoX.getSaidas().get("a")));
       assertTrue(Arrays.asList(estadoX).containsAll(estadoX.getSaidas().get("b")));
@@ -64,6 +66,8 @@ public class JSONLTSParserTest {
       Estado estadoX = lts.getEstado("X");
       Estado estadoY = lts.getEstado("Y");
       Estado estadoW = lts.getEstado("W");
+
+      assertSame(estadoX, lts.getEstadoInicial());
       
       assertEquals(1, estadoX.getSaidas().size());
       assertTrue(Arrays.asList(estadoY, estadoW).containsAll(estadoX.getSaidas().get("a")));
@@ -95,6 +99,13 @@ public class JSONLTSParserTest {
   @Test(expectedExceptions = LTSParsingException.class)
   public void testParseLTSTransicaoDesconhecida() throws Exception {
     try (InputStream stream = getClass().getResourceAsStream("lts-transicao-desconhecida.json")) {
+      parser.parse(stream);
+    }
+  }
+  
+  @Test(expectedExceptions = LTSParsingException.class)
+  public void testParseLTSEstadoInicialNaoPertecenteEstado() throws Exception {
+    try (InputStream stream = getClass().getResourceAsStream("lts-transicao-estado-inicial-fora-conjunto.json")) {
       parser.parse(stream);
     }
   }
