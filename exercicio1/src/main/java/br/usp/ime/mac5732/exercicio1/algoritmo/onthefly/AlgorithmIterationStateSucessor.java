@@ -4,11 +4,14 @@ import java.io.Serializable;
 
 public class AlgorithmIterationStateSucessor implements Serializable {
   private final String action;
+  private final boolean failure;
+
   private final AlgorithmIterationState algorithmIterationState;
 
   public AlgorithmIterationStateSucessor(String action, AlgorithmIterationState algorithmIterationState) {
     this.action = action;
     this.algorithmIterationState = algorithmIterationState;
+    this.failure = ((algorithmIterationState.getQ1() == null) || (algorithmIterationState.getQ2() == null));
   }
   
   public String getAction() {
@@ -18,5 +21,8 @@ public class AlgorithmIterationStateSucessor implements Serializable {
   public AlgorithmIterationState getAlgorithmIterationState() {
     return algorithmIterationState;
   }
-  
+
+  public boolean isFailure() {
+    return failure;
+  }
 }

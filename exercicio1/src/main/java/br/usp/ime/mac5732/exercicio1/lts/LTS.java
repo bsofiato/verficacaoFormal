@@ -31,7 +31,7 @@ public class LTS implements Serializable {
   }
 
   public Estado addEstado(String estado) {
-    Estado e = new Estado(this, estado, getAlfabeto());
+    Estado e = new Estado(this, estado);
     getEstados().add(e);
     return e;
   }

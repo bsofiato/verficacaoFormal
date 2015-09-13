@@ -19,10 +19,10 @@ public class Estado implements Serializable {
     getSaidas().put(alfabetoEntry, new HashSet<Estado>());
   }
 
-  public Estado(LTS lts, String nome, Set<String> alfabeto) {
+  public Estado(LTS lts, String nome) {
     this.lts = lts;
     this.nome = nome;
-    alfabeto.stream().forEach(t->initEntradaSaida(t));
+    this.lts.getAlfabeto().stream().forEach(t->initEntradaSaida(t));
   }
 
   public String getNome() {
