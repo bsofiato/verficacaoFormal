@@ -5,6 +5,7 @@ import br.usp.ime.mac5732.exercicio1.lts.parser.LTSParser;
 import br.usp.ime.mac5732.exercicio1.lts.parser.LTSParsingException;
 import br.usp.ime.mac5732.exercicio1.lts.parser.json.JSONLTSParser;
 import java.io.InputStream;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
@@ -25,11 +26,57 @@ public abstract class BaseBisimulationAlgorithmTest <AlgorithmType extends Equiv
   }
   
   @Test
-  public void testSameLTS() throws Exception {
-    try (InputStream lts1 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts1.json")) {
-      try (InputStream lts2 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts1.json")) {
+  public void testSameStatesLTS() throws Exception {
+    try (InputStream lts1 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-simplest.json")) {
+      try (InputStream lts2 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-simplest.json")) {
         assertTrue(doCheck(lts1, lts2));
       }
     }
   }
+  
+  @Test
+  public void testEquivalentDiferentStatesLTS() throws Exception {
+    try (InputStream lts1 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-simplest.json")) {
+      try (InputStream lts2 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-simplest-diferent-states.json")) {
+        assertTrue(doCheck(lts1, lts2));
+      }
+    }
+  }
+  
+  @Test
+  public void testEquivalentMoreThanOneLTS() throws Exception {
+    try (InputStream lts1 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-deterministico.json")) {
+      try (InputStream lts2 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-deterministico.json")) {
+        assertTrue(doCheck(lts1, lts2));
+      }
+    }
+  }
+  
+  @Test
+  public void testNotEquivalent() throws Exception {
+    try (InputStream lts1 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-simplest.json")) {
+      try (InputStream lts2 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-deterministico.json")) {
+        assertFalse(doCheck(lts1, lts2));
+      }
+    }
+  }
+  
+  @Test
+  public void testEquivalentWithLTSWithCycles() throws Exception {
+    try (InputStream lts1 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-with-cycles.json")) {
+      try (InputStream lts2 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-with-cycles.json")) {
+        assertTrue(doCheck(lts1, lts2));
+      }
+    }
+  }
+  
+  @Test
+  public void testEquivalentWithNonDeterministicLTS() throws Exception {
+    try (InputStream lts1 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-nao-deterministico.json")) {
+      try (InputStream lts2 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-nao-deterministico.json")) {
+        assertTrue(doCheck(lts1, lts2));
+      }
+    }
+  }
+
 }
