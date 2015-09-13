@@ -24,7 +24,7 @@ public abstract class BaseBisimulationAlgorithmTest <AlgorithmType extends Equiv
     return createAlgorithm().isEquivalent(lts1, lts2, new PrintStreamFeedbackListener(System.out));
   }
   
-  @Test(timeOut = 2000L)
+  @Test
   public void testSameLTS() throws Exception {
     try (InputStream lts1 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts1.json")) {
       try (InputStream lts2 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts1.json")) {

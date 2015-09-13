@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AlgorithmIterationState {
 
@@ -36,10 +37,12 @@ public class AlgorithmIterationState {
   private List<AlgorithmIterationStateSucessor> createSucessors(String action) {
     List<AlgorithmIterationStateSucessor> sucessors = new ArrayList<AlgorithmIterationStateSucessor>();
     Collection<Estado> q1Succs = getSaidasNormalizadas(getQ1(), action);
-    Collection<Estado> q2Succs = getSaidasNormalizadas(getQ1(), action);
+    Collection<Estado> q2Succs = getSaidasNormalizadas(getQ2(), action);
     for (Estado q1Succ : q1Succs) {
       for (Estado q2Succ : q2Succs) {
-        sucessors.add(new AlgorithmIterationStateSucessor(action, new AlgorithmIterationState(q1Succ, q2Succ)));
+        if ((q1Succ != null) && (q2Succ != null)) { //Sera ?
+          sucessors.add(new AlgorithmIterationStateSucessor(action, new AlgorithmIterationState(q1Succ, q2Succ)));
+        }
       }
     }
     return sucessors;
@@ -78,8 +81,8 @@ public class AlgorithmIterationState {
     return !getSucessors().isEmpty();
   }
 
-  public AlgorithmIterationState chooseAndRemove() {
-    return getSucessors().pop().getAlgorithmIterationState();
+  public AlgorithmIterationStateSucessor chooseAndRemove() {
+    return getSucessors().pop();
   }
 
   @Override
@@ -102,9 +105,27 @@ public class AlgorithmIterationState {
     if (!Objects.equals(this.getQ1(), other.getQ1())) {
       return false;
     }
-    if (!Objects.equals(this.getQ1(), other.getQ2())) {
+    if (!Objects.equals(this.getQ2(), other.getQ2())) {
       return false;
     }
     return true;
   }
+  
+  public BitArray createBitArray() {
+    if (getQ1() != null && getQ2() != null) {
+      Set <Estado> estados = Stream.of(getQ1(), getQ2()).map(t -> t.getSaidas().values()).flatMap(t -> t.stream()).flatMap(t -> t.stream()).collect(Collectors.toSet());
+      return new BitArray(estados);
+    } else {
+      throw new IllegalStateException();
+    }
+  }
+
+  @Override
+  public String toString() {
+    String q1Name = (getQ1() == null) ? null : getQ1().getNome();
+    String q2Name = (getQ2() == null) ? null : getQ2().getNome();
+    
+    return "AlgorithmIterationState{" + "q1=" + q1Name + ", q2=" + q2Name + '}';
+  }
+  
 }

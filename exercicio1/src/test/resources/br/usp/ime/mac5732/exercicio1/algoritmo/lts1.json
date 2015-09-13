@@ -1,10 +1,8 @@
 {
-  "alfabeto" : ["a", "b"],
+  "alfabeto" : ["a"],
   "estados" : ["X", "Y"],
   "transicoes" : [
-    ["X", "a", "Y"],
-    ["Y", "a", "X"], 
-    ["X", "b", "X"]
+    ["X", "a", "Y"]
   ],
   "estadoInicial" : "X"
 }
