@@ -27,7 +27,7 @@ public class AlgorithmIterationState {
 
   private Collection<Estado> getSaidasNormalizadas(Estado estado, String action) {
     Collection<Estado> estados = estado.getSaidas().get(action);
-    if (estados.isEmpty()) {
+    if ((estados == null) || (estados.isEmpty())) {
       estados = new ArrayList<Estado> ();
       estados.add(null);
     }
@@ -40,7 +40,7 @@ public class AlgorithmIterationState {
     Collection<Estado> q2Succs = getSaidasNormalizadas(getQ2(), action);
     for (Estado q1Succ : q1Succs) {
       for (Estado q2Succ : q2Succs) {
-        if ((q1Succ != null) && (q2Succ != null)) { //Sera ?
+        if ((q1Succ != null) || (q2Succ != null)) { //Sera ?
           sucessors.add(new AlgorithmIterationStateSucessor(action, new AlgorithmIterationState(q1Succ, q2Succ)));
         }
       }

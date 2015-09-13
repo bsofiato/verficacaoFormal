@@ -1,0 +1,9 @@
+{
+  "alfabeto" : ["a", "b"],
+  "estados" : ["X", "Y"],
+  "transicoes" : [
+    ["X", "b", "Y"],
+    ["X", "a", "Y"]
+  ],
+  "estadoInicial" : "X"
+}

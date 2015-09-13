@@ -26,14 +26,14 @@ public class OnTheFlyBehavioralEquivalenceCheckingAlgorithm implements Equivalen
     return (v.contains(state) || w.contains(state));
   }
   
-  private Stack <BitArray> createST2(AlgorithmIterationState estadoInicial, LTS op1, LTS op2) {
+  private Stack <BitArray> createST2(AlgorithmIterationState estadoInicial) {
     Stack <BitArray> st2 = new Stack <BitArray> ();
-    st2.push(new BitArray(op1.getEstadoInicial(), op2.getEstadoInicial()));
+    st2.push(new BitArray(estadoInicial.getQ1(), estadoInicial.getQ2()));
     st2.push(estadoInicial.createBitArray());
     return st2;
   }
   
-  private Stack <AlgorithmIterationStateSucessor> createST1(AlgorithmIterationState estadoInicial, LTS op1, LTS op2) {
+  private Stack <AlgorithmIterationStateSucessor> createST1(AlgorithmIterationState estadoInicial) {
     Stack <AlgorithmIterationStateSucessor> st1 = new Stack<AlgorithmIterationStateSucessor> ();
     st1.add(new AlgorithmIterationStateSucessor(null, estadoInicial));
     return st1;
@@ -44,8 +44,8 @@ public class OnTheFlyBehavioralEquivalenceCheckingAlgorithm implements Equivalen
     
     AlgorithmIterationState estadoInicial =  new AlgorithmIterationState(op1.getEstadoInicial(), op2.getEstadoInicial()); // (q01, q02)
         
-    Stack <AlgorithmIterationStateSucessor> st1 = createST1(estadoInicial, op1, op2);
-    Stack <BitArray> st2 = createST2(estadoInicial, op1, op2);
+    Stack <AlgorithmIterationStateSucessor> st1 = createST1(estadoInicial);
+    Stack <BitArray> st2 = createST2(estadoInicial);
     
     Set <AlgorithmIterationState> v = new HashSet <AlgorithmIterationState> ();
     Set <AlgorithmIterationState> r = new HashSet <AlgorithmIterationState> ();
