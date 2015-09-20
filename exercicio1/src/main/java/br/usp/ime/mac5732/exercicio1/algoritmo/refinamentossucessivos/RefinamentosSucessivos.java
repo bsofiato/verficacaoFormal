@@ -1,5 +1,7 @@
 package br.usp.ime.mac5732.exercicio1.algoritmo.refinamentossucessivos;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -7,6 +9,8 @@ import java.util.Set;
 
 import br.usp.ime.mac5732.exercicio1.lts.Estado;
 import br.usp.ime.mac5732.exercicio1.lts.LTS;
+import br.usp.ime.mac5732.exercicio1.lts.parser.LTSParser;
+import br.usp.ime.mac5732.exercicio1.lts.parser.json.JSONLTSParser;
 
 public class RefinamentosSucessivos {
 	
@@ -26,6 +30,33 @@ public class RefinamentosSucessivos {
 	private LTS lts;
 	private Set<Set<Estado>> rho;
 	
+	public static void main(String[] args) {
+		RefinamentosSucessivos r = new RefinamentosSucessivos();
+		try {
+			r.lerJSON("C:\\Users\\lemer\\git\\verficacaoFormal\\exercicio1\\src\\test\\resources\\br\\usp\\ime\\mac5732\\exercicio1\\lts\\parser\\json\\lts-fernandez-example.json");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Set<Set<Estado>> B = new HashSet<Set<Estado>>();
+		Set<Estado> B_ = r.lts.getEstados();
+		B.add(B_);
+		Set<Set<Set<Estado>>> W = new HashSet<Set<Set<Estado>>>();
+		W.add(B);
+		r.rho = new HashSet<Set<Estado>>();
+		r.rho.add(B_);
+		r.simpleSplitterRefinement(B, W);
+	}
+	
+	
+
+	public void lerJSON(String arquivo) throws Exception {
+	   LTSParser parser = new JSONLTSParser();
+	   File file = new File(arquivo);
+	   lts = parser.parse(new FileInputStream(file));
+	   
+	}
+	
 	private void simpleSplitterRefinement (Set<Set<Estado>> B, Set<Set<Set<Estado>>>W) {
 		Set<String> A = lts.getAlfabeto();
 //	 	Step 1. Remove the element B from W.
@@ -34,7 +65,7 @@ public class RefinamentosSucessivos {
 	    for (String a : A){
 //	 Step 2. Compute the set I={x1|Ex Ep ^ x1 = x && Ta-1[B] != 0).
 	        Set<Estado> I;
-//	 TODO Copy the elements of B into a temporary set B’. 
+//	 TODO Copy the elements of B into a temporary set Bâ€™. 
 //	        Set <Estado> B_ = B;
 	        Set <Estado> B1 = new HashSet<Estado>();
 	        Set <Estado> B2 = new HashSet<Estado>();
@@ -43,17 +74,28 @@ public class RefinamentosSucessivos {
 		    	for (Estado p : p_){
 			    	Map<String, Set<Estado>> entradas = p.getEntradas();
 			    	Set<Estado> estadosEntradas = entradas.get(a);
+			    	System.out.println(estadosEntradas.size()+" entradas para "+p.getNome()+" em "+a);
 			    	for (Estado est : estadosEntradas) {
-			    		if (est.equals(p)) {
+//			    		if (est.equals(p)) {
 //	 move this p into a new class. (The elements of a same class are moved into the same new
 //	 class.) Make each new class point to its associated old class. 
+//			    			B1.add(est);
+//			    		} else {
 			    			B1.add(est);
-			    		} else {
-			    			B2.add(est);
-		    			}
+//		    			}
 		    		}
 		    	}
 		    }
+		    for (Set<Estado> r_ : rho){
+		    	System.out.println("rho tem "+rho.size());
+		    	for (Estado r : r_){
+		    		if (!B1.contains(r)){
+		    			B2.add(r);
+		    		}
+		    	}
+	    	}
+		    System.out.println(B1.size());
+		    System.out.println(B2.size());
 //	 if X2 != X1, add X1 to rho'
 		    if (!B1.equals(B2)) {
 		    	rho.add(B1);
@@ -75,7 +117,6 @@ public class RefinamentosSucessivos {
 	        	splitter.add(B1);
 	        	W.add(splitter);
 	        }
-	     }
+	  }
 	}
-	
 }
