@@ -2,7 +2,7 @@ package br.usp.ime.mac5732.exercicio1.algoritmo.refinamentossucessivos;
 
 public class RefineTest {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		RefinamentosSucessivos rs = new RefinamentosSucessivos("C:\\Fabio\\lts-simplest.json");
 		Partition part = rs.getPartition();

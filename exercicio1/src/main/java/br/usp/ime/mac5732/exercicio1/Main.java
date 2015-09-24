@@ -3,6 +3,7 @@ package br.usp.ime.mac5732.exercicio1;
 import br.usp.ime.mac5732.exercicio1.algoritmo.EquivalenceCheckinAlgorithm;
 import br.usp.ime.mac5732.exercicio1.algoritmo.PrintStreamFeedbackListener;
 import br.usp.ime.mac5732.exercicio1.algoritmo.onthefly.OnTheFlyBehavioralEquivalenceCheckingAlgorithm;
+import br.usp.ime.mac5732.exercicio1.algoritmo.refinamentossucessivos.RefinamentoSucessivosBehavioralEquivalenceCheckingAlgorithm;
 import br.usp.ime.mac5732.exercicio1.lts.LTS;
 import br.usp.ime.mac5732.exercicio1.lts.parser.LTSParser;
 import br.usp.ime.mac5732.exercicio1.lts.parser.LTSParsingException;
@@ -24,7 +25,7 @@ public class Main {
   
   private static Options createOptions() {
     Options options = new Options();
-    options.addOption(Option.builder("algoritmo").hasArg().argName("algoritmo").desc("Algoritmo utilizado para a verificacao").required().build());
+    options.addOption(Option.builder("algoritmo").hasArg().argName("algoritmo").desc("Algoritmo utilizado para a verificacao (1 - OnTheFly, 2 - Refinamentos Sucessivos)").required().build());
     options.addOption(Option.builder("primeiroLTS").hasArg().argName("primeiroLTS").desc("Primeiro LTS a ser verificado").required().build());
     options.addOption(Option.builder("segundoLTS").hasArg().argName("segundoLTS").desc("Segundo LTS a ser verificado").required().build());
     return options;
@@ -33,7 +34,7 @@ public class Main {
     String tipoAlgoritmo = line.getOptionValues("algoritmo")[0];
     switch (tipoAlgoritmo) {
       case "1" : return new OnTheFlyBehavioralEquivalenceCheckingAlgorithm();
-      case "" : return null;
+      case "2" : return new RefinamentoSucessivosBehavioralEquivalenceCheckingAlgorithm();
       default : throw new ParseException("Algortimo desconhecido " + tipoAlgoritmo);
     }
   }
