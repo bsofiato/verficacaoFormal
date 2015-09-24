@@ -3,8 +3,6 @@ package br.usp.ime.mac5732.exercicio1.algoritmo.refinamentossucessivos;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import br.usp.ime.mac5732.exercicio1.lts.Estado;
@@ -14,6 +12,49 @@ import br.usp.ime.mac5732.exercicio1.lts.parser.json.JSONLTSParser;
 
 public class RefinamentosSucessivos {
 	
+	private Partition ro;
+	private LTS labelTransSystem;
+	private Set<Splitter> W;
+	
+	public RefinamentosSucessivos(String jsonFile) {
+		//Parse JSON to LTS
+		try {
+			labelTransSystem = lerJSON(jsonFile);
+			labelTransSystem.getEstados();
+			Splitter eqClass = new Splitter(labelTransSystem.getEstados());
+			ro = new Partition(eqClass);
+			W = new HashSet<Splitter>();
+			W.add(eqClass);
+//			for(Splitter b : W) {
+//				b.printB();
+//			}
+			computeRefinements();
+//			System.out.println("Particionamento final: ");
+//			ro.printRo();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void computeRefinements() {
+		while(W.size()>0) {
+			Splitter B = null;
+			for(Splitter bTmp : W) {
+				B = bTmp;
+				break;
+			}
+			refinementStep(B);
+//			System.out.println("Size: " + W.size());
+		}
+	}
+	
+//	 For each a in A, perform the following two steps:
+//	 Step 2. Compute the set I={x,13xEp A x, = x n T;‘[B] # 0).
+//	 Copy the elements of B into a temporary set B’. For each state p in Ta[B] move
+//	 this p into a new class. (The elements of a same class are moved into the same new
+//	 class.) Make each new class point to its associated old class. During the scan of B’,
+//	 compute the map infob.
 
 //	Step 3. Update p and W. After Step 2, each old class X contains the elements
 //	X - Ta[B]. For each X1, in I perform the following statements:
@@ -27,96 +68,108 @@ public class RefinamentosSucessivos {
 //	since the old class points to its father.) If X is not in W and X is not a leaf then
 //	create a new node X12 as previously and add it to W.
 	
-	private LTS lts;
-	private Set<Set<Estado>> rho;
-	
-	public static void main(String[] args) {
-		RefinamentosSucessivos r = new RefinamentosSucessivos();
-		try {
-			r.lerJSON("C:\\Users\\lemer\\git\\verficacaoFormal\\exercicio1\\src\\test\\resources\\br\\usp\\ime\\mac5732\\exercicio1\\lts\\parser\\json\\lts-fernandez-example.json");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	private void refinementStep (Splitter splitterB) {
+//	 Step 1. Remove the element B from W.
+		W.remove(splitterB);
+		Set<Estado> intersec;
+		Set<Estado> diff;
+		Splitter[] arrayB = null;
+		if(splitterB.getClassification()==Splitter.EQUIVALENT_CLASS) {
+			arrayB = new Splitter[1];
+			arrayB[0] = splitterB;
+		} else {
+			if(splitterB.getLeaves()==null) {
+				return;
+			}
+			arrayB = splitterB.getLeaves();
+			if(arrayB.length!=2) {
+				return;
+			}
 		}
-		Set<Set<Estado>> B = new HashSet<Set<Estado>>();
-		Set<Estado> B_ = r.lts.getEstados();
-		B.add(B_);
-		Set<Set<Set<Estado>>> W = new HashSet<Set<Set<Estado>>>();
-		W.add(B);
-		r.rho = new HashSet<Set<Estado>>();
-		r.rho.add(B_);
-		r.simpleSplitterRefinement(B, W);
-	}
-	
-	
+		
+		for(Splitter B : arrayB) {
+			// loop for all actions
+			for(String action : labelTransSystem.getAlfabeto()) {
+//				System.out.println(action);
+				Set<Estado> taInv = opTaInverse(B, action);
+				Partition roTmp = new Partition();
+				for(Splitter sp : ro.getRo()){
+					roTmp.addClass(sp);
+				}
+//				roTmp.printRo();
+//				Partition roTmp = new Partition(ro.getRo());
+				
+				// for all X of ro
+				for(Splitter sp : roTmp.getRo()){
+//					System.out.print("Classe: ");
+//					sp.printB();
+					intersec = new HashSet<Estado>(); //states that have the transition
+					diff = new HashSet<Estado>(); // states that dont have the transition
+					for(Estado estado : sp.getB()) {
+						if(taInv.contains(estado)) {
+							intersec.add(estado);
+						} else {
+							diff.add(estado);
+						}
+					}
 
-	public void lerJSON(String arquivo) throws Exception {
-	   LTSParser parser = new JSONLTSParser();
-	   File file = new File(arquivo);
-	   lts = parser.parse(new FileInputStream(file));
-	   
+//					System.out.print("Intersec: ");
+//					for(Estado st : intersec) {
+//						System.out.print(st.getNome() + ", ");
+//					}
+//					System.out.println();
+//
+//					System.out.print("Dif: ");
+//					for(Estado st : diff) {
+//						System.out.print(st.getNome() + ", ");
+//					}
+//					System.out.println();
+//					System.out.print("Ro fora: ");
+//					ro.printRo();
+					
+					//if some further partition was made, include new compound splitter in W
+					if(intersec.size()!=0 && diff.size()!=0) {
+						Splitter B1 = new Splitter(intersec);
+						B1.setRoot(B);
+						Splitter B2 = new Splitter(diff);
+						B2.setRoot(B);
+						B.setLeaves(B1, B2);
+						W.add(B);
+						ro.removeClass(sp);
+						ro.addClass(B1);
+						ro.addClass(B2);
+//						System.out.print("Ro fora: ");
+//						ro.printRo();
+					}
+				}
+				
+			}
+		}
+		
+		
 	}
 	
-	private void simpleSplitterRefinement (Set<Set<Estado>> B, Set<Set<Set<Estado>>>W) {
-		Set<String> A = lts.getAlfabeto();
-//	 	Step 1. Remove the element B from W.
-		W.remove(B);
-//		For each a in A, perform the following two steps:
-	    for (String a : A){
-//	 Step 2. Compute the set I={x1|Ex Ep ^ x1 = x && Ta-1[B] != 0).
-	        Set<Estado> I;
-//	 TODO Copy the elements of B into a temporary set Bâ€™. 
-//	        Set <Estado> B_ = B;
-	        Set <Estado> B1 = new HashSet<Estado>();
-	        Set <Estado> B2 = new HashSet<Estado>();
-//	 For each state p in Ta[B]
-		    for (Set<Estado> p_ : B){
-		    	for (Estado p : p_){
-			    	Map<String, Set<Estado>> entradas = p.getEntradas();
-			    	Set<Estado> estadosEntradas = entradas.get(a);
-			    	System.out.println(estadosEntradas.size()+" entradas para "+p.getNome()+" em "+a);
-			    	for (Estado est : estadosEntradas) {
-//			    		if (est.equals(p)) {
-//	 move this p into a new class. (The elements of a same class are moved into the same new
-//	 class.) Make each new class point to its associated old class. 
-//			    			B1.add(est);
-//			    		} else {
-			    			B1.add(est);
-//		    			}
-		    		}
-		    	}
-		    }
-		    for (Set<Estado> r_ : rho){
-		    	System.out.println("rho tem "+rho.size());
-		    	for (Estado r : r_){
-		    		if (!B1.contains(r)){
-		    			B2.add(r);
-		    		}
-		    	}
-	    	}
-		    System.out.println(B1.size());
-		    System.out.println(B2.size());
-//	 if X2 != X1, add X1 to rho'
-		    if (!B1.equals(B2)) {
-		    	rho.add(B1);
-		    }
-//	 if X2 E W, and X2 is a simple splitter then add X1 to W
-		    Set<Set<Estado>> splitter = new HashSet<>();
-		    splitter.add(B2);
-		    
-	        if (W.contains(splitter) && B.size() == 1) {
-	        	splitter.remove(B2);
-	        	splitter.add(B1);
-	        	W.add(splitter);
-	        }
-//	  if X2 E W, and X2 is a leaf of a compound splitter then create a
-//	  compound splitter X12 with leaves X1 and X2 and add X12 to W
-//	  if X2 !E W, then create a
-//	  compound splitter X12 with leaves X1 and X2 and add X12 to W	        
-	        if ((W.contains(splitter) && B.size() > 1) || !W.contains(splitter)) {
-	        	splitter.add(B1);
-	        	W.add(splitter);
-	        }
-	  }
+	private Set<Estado> opTaInverse(Splitter B, String a) {
+		Set<Estado> chegam = new HashSet<Estado>();
+		for(Estado estado : B.getB()) {
+			if(estado.getEntradas().containsKey(a)) {
+				for(Estado estadoChega : estado.getEntradas().get(a)) {
+					chegam.add(estadoChega);
+				}
+			}
+		}
+		return chegam;
 	}
+	
+	public LTS lerJSON(String arquivo) throws Exception {
+		   LTSParser parser = new JSONLTSParser();
+		   File file = new File(arquivo);
+		   LTS lts = parser.parse(new FileInputStream(file));
+		   return lts;
+	}
+	
+	public Partition getPartition() {
+		return ro;
+	}
+	
 }
