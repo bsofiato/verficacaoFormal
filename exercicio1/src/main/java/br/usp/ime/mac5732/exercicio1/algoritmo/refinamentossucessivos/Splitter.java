@@ -1,30 +1,33 @@
 package br.usp.ime.mac5732.exercicio1.algoritmo.refinamentossucessivos;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import br.usp.ime.mac5732.exercicio1.lts.Estado;
 
 public class Splitter {
 
-	public static final int EQUIVALENT_CLASS = 0;
-	public static final int COMPOUND_SPLITTER_ROOT = 1;
-	public static final int COMPOUND_SPLITTER_LEAF = 2;
-	public static final int COMPOUND_SPLITTER_FULL = 3;
+	public static final int EQUIVALATION_CLASS = 0; //simple splitter
+	public static final int COMPOUND_SPLITTER_ROOT = 1; //compound splitter
+	public static final int COMPOUND_SPLITTER_LEAF = 2; //compound splitter
+	public static final int COMPOUND_SPLITTER_FULL = 3; //compound splitter
 	
 	private Set<Estado> B;
 	private Splitter[] leaves;
 	private Splitter root;
 	private int classification;
+	private Set<String> saidas;
 
 	public Splitter() {
-		setRoot(null);
-		setLeaves(null,null);
+		root = null;
+		leaves = null;
 		new Splitter(null);
 	}
 	
 	public Splitter(Set<Estado> B) {
+		saidas = null;
 		this.B = B;
-		classification = EQUIVALENT_CLASS;
+		classification = EQUIVALATION_CLASS;
 		root = null;
 		leaves = null;
 	}
@@ -78,43 +81,22 @@ public class Splitter {
 	}
 	
 	
-	public boolean isInSet(Set<Splitter> splSet) {
-		for(Splitter spl : splSet) {
-			if(equalSets(B,spl.getB())) {
-				return true;
+	private void updateSaidas() {
+		if(saidas==null) {
+			saidas = new HashSet<String>();
+		}
+		for(Estado estado : B) {
+			for(String str : estado.getSaidas().keySet()) {
+				if(estado.getSaidas().get(str).size()>0) {
+					saidas.add(str);
+				}
 			}
 		}
-		return false;
+
 	}
 	
-	private static boolean equalSets(Set<Estado> set1, Set<Estado> set2) {
-		boolean b1 = hasAllEstados(set1, set2); //verifies if set2 contains all estados of set1
-		boolean b2 = hasAllEstados(set2, set1); //verifies if set1 contains all estados of set2
-		
-		return (b1 && b2);
-	}
-	
-	/**
-	 * Verifies if setContains has all states of setContained
-	 * @param setContained
-	 * @param setContains
-	 * @return true if setContains has all estados of setContained
-	 */
-	private static boolean hasAllEstados(Set<Estado> setContained, Set<Estado> setContains) {
-		for(Estado estado : setContained) {
-			if(!setHasEstado(estado,setContains)) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	public static boolean setHasEstado(Estado estadoContained, Set<Estado> setContains) {
-		for(Estado estadoContains : setContains) {
-			if(estadoContained.getNome().compareTo(estadoContains.getNome())==0) {
-				return true;
-			}
-		}
-		return false;
+	public Set<String> getSaidas() {
+		updateSaidas();
+		return saidas;
 	}
 }
