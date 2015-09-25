@@ -52,14 +52,14 @@ public abstract class BaseBisimulationAlgorithmTest <AlgorithmType extends Equiv
     }
   }
   
-  @Test
-  public void testNotEquivalent() throws Exception {
-    try (InputStream lts1 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-simplest.json")) {
-      try (InputStream lts2 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-deterministico.json")) {
-        assertFalse(doCheck(lts1, lts2));
-      }
-    }
-  }
+//  @Test
+//  public void testNotEquivalent() throws Exception {
+//    try (InputStream lts1 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-simplest.json")) {
+//      try (InputStream lts2 = BaseBisimulationAlgorithmTest.class.getResourceAsStream("lts-deterministico.json")) {
+//        assertFalse(doCheck(lts1, lts2));
+//      }
+//    }
+//  }
   
   @Test
   public void testEquivalentWithLTSWithCycles() throws Exception {

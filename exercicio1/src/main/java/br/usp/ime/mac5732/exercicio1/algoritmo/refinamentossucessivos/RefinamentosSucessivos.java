@@ -11,27 +11,20 @@ import br.usp.ime.mac5732.exercicio1.lts.parser.LTSParser;
 import br.usp.ime.mac5732.exercicio1.lts.parser.json.JSONLTSParser;
 
 public class RefinamentosSucessivos {
-	
 	private Partition ro;
 	private LTS labelTransSystem;
 	private Set<Splitter> W;
 	
-	public RefinamentosSucessivos(String jsonFile) {
-		//Parse JSON to LTS
-		try {
-			labelTransSystem = lerJSON(jsonFile);
-			labelTransSystem.getEstados();
+  public RefinamentosSucessivos(LTS lts) {
+    this.labelTransSystem = lts;
+   	labelTransSystem.getEstados();
 
-			Splitter eqClass = new Splitter(labelTransSystem.getEstados());
-			ro = new Partition(eqClass);
-			W = new HashSet<Splitter>();
-			W.add(eqClass);
-			computeRefinements();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+		Splitter eqClass = new Splitter(labelTransSystem.getEstados());
+		ro = new Partition(eqClass);
+		W = new HashSet<Splitter>();
+		W.add(eqClass);
+		computeRefinements();
+  }
 	
 	public void computeRefinements() {
 		while(W.size()>0) {
